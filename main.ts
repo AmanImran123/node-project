@@ -1,24 +1,56 @@
-console.log("Guess a number between 1 to 8");
-let a: number = Math.floor(Math.random() * 7) + 1; // Added +1 to make the range from 1 to 8
 import inquirer from "inquirer";
 
-(async () => { // Added async function wrapper
-    while (true) {
-        let input = await inquirer.prompt(
-            {
-                name: "guess",
-                type: "number",
-                message: "Enter your guess number you want between 1 to 8:"
-            }
-        );
+let myBlance = 10000;
 
-        let ans: number = input.guess; // Added type definition for ans
 
-        if (a === ans) {
-            console.log("congratulation your number is absolutely correct");
-            break;
-        } else {
-            console.log("sorry your guess number is wrong try again");
+let myPin = 1234;
+
+let pinAnswer = await inquirer.prompt(
+    [
+        {
+            name: "pin",
+            message: "enter your pin",
+            type: "number"
         }
+    ]
+);
+
+if (pinAnswer.pin == myPin) {
+    console.log("correct pin");
+   
+
+   let operationAns = await inquirer.prompt(
+        [
+            {
+                name:"operation"
+                message:"please select option",
+                type:"list",
+                choices:["withdraw","check balance"]
+            }
+        ]
+    );
+    console.log(operationAns)
+    if (operationAns.operation === " withdraw") {
+        let amountAns = await inquirer.prompt(
+            [
+                {
+                    name: "amount",
+                    message: "enter amount",
+                    type: "number"
+                }
+            ]
+        );
+        myBlance -= amountAns.amount
+        console.log("your remaining balance is: " + myBlance)
+    }else if (operationAns.operation === " check balance "){
+        console.log("your remaining balance is: " + myBlance)
     }
-})(); // Added immediate invocation of the async function
+}
+
+else{
+    console.log("wrong pin")
+
+}
+
+
+
