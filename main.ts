@@ -1,104 +1,82 @@
 import * as readline from "readline";
 
-const rl = readline.createInterface({
+interface Question {
+  question: string;
+  options: string[];
+  correctAnswerIndex: number;
+}
+
+interface Quiz {
+  questions: Question[];
+}
+
+function shuffleArray<T>(array: T[]): T[] {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function runQuiz(quiz: Quiz, quizNumber: number): void {
+  const rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout
-});
+    output: process.stdout,
+  });
 
-class Player {
-    private name: string;
-    private health: number;
-    private energy: number;
+  let score = 0;
 
-    constructor(name: string) {
-        this.name = name;
-        this.health = 100;
-        this.energy = 100;
-    }
+  const shuffledQuestions = shuffleArray(quiz.questions);
 
-    getHealth(): number {
-        return this.health;
-    }
+  function askQuestion(index: number): void {
+    if (index < shuffledQuestions.length) {
+      const question = shuffledQuestions[index];
 
-    getEnergy(): number {
-        return this.energy;
-    }
+      console.log(`Question ${index + 1}: ${question.question}`);
+      for (let j = 0; j < question.options.length; j++) {
+        console.log(`${j + 1}: ${question.options[j]}`);
+      }
 
-    decreaseHealth(amount: number): void {
-        this.health -= amount;
-        if (this.health < 0) {
-            console.log(`${this.name} has been defeated! Game over.`);
-            rl.close();
+      rl.question("Enter your answer (1,2,3, etc.):", (userAnswer: string) => {
+        const userAnswerIndex = parseInt(userAnswer.trim()) - 1;
+        if (userAnswerIndex === question.correctAnswerIndex) {
+          console.log("Correct!");
+          score++;
         } else {
-            console.log(`${this.name} has ${this.health} health left.`);
+          console.log(`Incorrect! The correct answer is: ${question.options[question.correctAnswerIndex]}`);
         }
+        askQuestion(index + 1);
+      });
+    } else {
+      rl.close();
+      const percentageScore = (score / shuffledQuestions.length) * 100;
+      console.log(`Quiz ${quizNumber} Complete! Your score: ${score}/${shuffledQuestions.length} (${percentageScore}%)`);
     }
+  }
 
-    decreaseEnergy(amount: number): void {
-        this.energy -= amount;
-        if (this.energy <= 0) {
-            console.log(`${this.name} has been defeated! Game over.`);
-            rl.close();
-        } else {
-            console.log(`${this.name} has ${this.energy} energy left.`);
-        }
-    }
+  rl.question(`Quiz ${quizNumber}: Press Enter to start the quiz...`, () => {
+    askQuestion(0);
+  });
 }
 
-class Monster {
-    private name: string;
-    private health: number;
+const myQuiz: Quiz = {
+  questions: [
+    {
+      question: "What is the capital of France?",
+      options: ["Paris", "London", "Berlin", "Madrid"],
+      correctAnswerIndex: 0,
+    },
+    {
+      question: "What is the capital of Germany?",
+      options: ["Berlin", "London", "Paris", "Madrid"],
+      correctAnswerIndex: 0,
+    },
+    {
+      question: "What is the capital of Italy?",
+      options: ["Rome", "London", "Paris", "Madrid"],
+      correctAnswerIndex: 0,
+    },
+  ],
+};
 
-    constructor(name: string) {
-        this.name = name;
-        this.health = 50;
-    }
-
-    getHealth(): number {
-        return this.health;
-    }
-
-    attack(player: Player): void {
-        const damage = Math.floor(Math.random() * 10) + 1;
-
-        player.decreaseHealth(damage);
-    }
-}
-
-const player = new Player("Hero");
-const monster = new Monster("Drogan");
-
-function battle(): void {
-    rl.question("Press enter to attack:", () => {
-        const playerAttack = Math.floor(Math.random() * 20) + 1;
-        const energyConsumption = Math.floor(Math.random() * 5) + 1;
-
-        player.decreaseEnergy(energyConsumption);
-class Player {
-    public name: string; // changed from private to public
-    private health: number;
-    private energy: number;
-
-    constructor(name: string) {
-        this.name = name;
-        this.health = 100;
-        this.energy = 100;
-    }
-
-    //... rest of the code...
-}
-        monster.attack(player);
-
-        if (monster.getHealth() > 0 && player.getEnergy() > 0) {
-            console.log(`=========`);
-            console.log(`Next Round:`);
-            console.log(`Player's Health: ${player.getHealth()}`);
-            console.log(`Player's Energy: ${player.getEnergy()}`);
-            console.log(`Monster's Health: ${monster.getHealth()}`);
-            console.log(`=========`);
-            battle();
-        }
-    });
-}
-
-battle();
+runQuiz(myQuiz, 1);
