@@ -1,82 +1,24 @@
-import * as readline from "readline";
+let date_ob = new Date();
 
-interface Question {
-  question: string;
-  options: string[];
-  correctAnswerIndex: number;
-}
+let date = ("0" + date_ob.getDate()).slice(-2);
 
-interface Quiz {
-  questions: Question[];
-}
+let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
 
-function shuffleArray<T>(array: T[]): T[] {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
+let year = date_ob.getFullYear();
 
-function runQuiz(quiz: Quiz, quizNumber: number): void {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
+let hours = date_ob.getHours();
 
-  let score = 0;
+let minutes = date_ob.getMinutes();
 
-  const shuffledQuestions = shuffleArray(quiz.questions);
+let seconds = date_ob.getSeconds();
 
-  function askQuestion(index: number): void {
-    if (index < shuffledQuestions.length) {
-      const question = shuffledQuestions[index];
+console.log(year + "-" + month + "-" + date);
 
-      console.log(`Question ${index + 1}: ${question.question}`);
-      for (let j = 0; j < question.options.length; j++) {
-        console.log(`${j + 1}: ${question.options[j]}`);
-      }
 
-      rl.question("Enter your answer (1,2,3, etc.):", (userAnswer: string) => {
-        const userAnswerIndex = parseInt(userAnswer.trim()) - 1;
-        if (userAnswerIndex === question.correctAnswerIndex) {
-          console.log("Correct!");
-          score++;
-        } else {
-          console.log(`Incorrect! The correct answer is: ${question.options[question.correctAnswerIndex]}`);
-        }
-        askQuestion(index + 1);
-      });
-    } else {
-      rl.close();
-      const percentageScore = (score / shuffledQuestions.length) * 100;
-      console.log(`Quiz ${quizNumber} Complete! Your score: ${score}/${shuffledQuestions.length} (${percentageScore}%)`);
-    }
-  }
+console.log(year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds);
 
-  rl.question(`Quiz ${quizNumber}: Press Enter to start the quiz...`, () => {
-    askQuestion(0);
-  });
-}
 
-const myQuiz: Quiz = {
-  questions: [
-    {
-      question: "What is the capital of France?",
-      options: ["Paris", "London", "Berlin", "Madrid"],
-      correctAnswerIndex: 0,
-    },
-    {
-      question: "What is the capital of Germany?",
-      options: ["Berlin", "London", "Paris", "Madrid"],
-      correctAnswerIndex: 0,
-    },
-    {
-      question: "What is the capital of Italy?",
-      options: ["Rome", "London", "Paris", "Madrid"],
-      correctAnswerIndex: 0,
-    },
-  ],
-};
+console.log(hours + ":" + minutes);
 
-runQuiz(myQuiz, 1);
+
+
